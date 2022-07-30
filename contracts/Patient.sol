@@ -2,17 +2,15 @@
 pragma solidity ^0.5.0;
 
 contract Patients {
-	uint256 public count;
+	uint256 public patientCount = 0;
 	mapping(address => Patient) public PatientInfo;
 
-	constructor () {
-		count = 0;
-	}
+	constructor () {}
 
-	/*modifier isPatient () {
-		require(PatientInfo[msg.sender] == owner, "Must be an owner");
+	modifier onlyPatient {
+		require(PatientInfo[msg.sender].isActive == true, "Only patient can make these changes");
 		_;
-	}*/
+	}
 
 	struct Patient {
 		string firstName;
@@ -26,6 +24,7 @@ contract Patients {
 		string phone;
 		uint8 medicalCheckups;
 		uint8 prescriptions;
+        bool isActive;
 	}
 
     // set patient details
@@ -38,10 +37,10 @@ contract Patients {
         string memory _bloodType, 
 		string memory _uAddress, 
         string memory _city, 
-        string memory _country, 
+        string memory _patientCountry, 
         string memory _phone) public {
-			PatientInfo[_patientId] = Patient(_firstName, _lastName, _birthDate, _gender, _bloodType, _uAddress, _city, _country, _phone, 0, 0);
-			count++;
+			PatientInfo[_patientId] = Patient(_firstName, _lastName, _birthDate, _gender, _bloodType, _uAddress, _city, _patientCountry, _phone, 0, 0, true);
+			patientCount++;
 
 	}
 

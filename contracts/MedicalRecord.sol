@@ -2,16 +2,27 @@
 pragma solidity ^0.5.0;
 
 import "./Patient.sol";
+import "./Doctor.sol";
 
-contract Prescriptions {
-    Patients patient;
-	uint256 public prescriptionCount;
-	mapping(address => mapping(string => Prescription[])) public prescriptions;
+contract MedicalRecords is Patients, Doctors {
+	uint256 public medicalRecordCount;
+    uint256 public medicalUuid;
+	mapping(address => mapping(uint => MedicalRecord[])) public Records;
 
 	constructor () {
-        prescriptionCount = 0;
-        patient= new Patients();
+        medicalRecordCount = 0;
+        medicalUuid = 1000;
 	}
+
+    struct MedicalRecord {
+    	uint8 bp;
+        uint8 temprature;
+        uint8 weight;
+        string diagnosis;
+        Doctor doctor;
+        Patient patient;
+        uint createdAt;
+    }
 
     struct Prescription {
     	string dosage;
@@ -21,24 +32,33 @@ contract Prescriptions {
         string createdAt;
         bool collected;
     }
+    
+    //generate uuid
+    function generateRecordId() internal returns (uint) {
+        return medicalUuid++;
+    }
 
-    // create prescription
-    function setPrescription (
-        address _patientId,
-    	string memory _dosage, 
-    	uint16 _qty, 
-    	string memory _details, 
-    	address _doctorId,
-    	string memory _createdAt,
-        string memory _uuid
-    ) public {
-        prescriptions[_patientId][_uuid].push(
-            Prescription(_dosage, _qty, _details, _doctorId, _createdAt, false)
+    // create MedicalRecord
+    function setMedicalRecord (
+        uint256 _uuid,
+        uint8 _bp,
+        uint8 _temprature,
+        uint8 _weight,
+        string memory _diagnosis,
+        address _doctorId,
+        address _patientId
+    ) public onlyDoctor {
+        // update patient MedicalRecords
+        Records[_patientId][_uuid].push(
+            MedicalRecord(
+                _bp, 
+                _temprature, 
+                _weight, 
+                _diagnosis, 
+                DoctorInfo[_doctorId],
+                PatientInfo[_patientId], 
+                block.timestamp
+            )
         );
-
-        // update patient prescriptions count
-        patient.updatePrescriptions(_patientId);
-
-        // update doctors prescription record
     }
 }

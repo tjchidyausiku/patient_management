@@ -1,23 +1,18 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity ^0.5.0;
 
-//import "./Prescription.sol";
-
 contract Doctors {
-    //Prescriptions prescription; 
 
 	constructor () {
-		doctorCount = 0;
-        //prescription = new Prescriptions();
 	}
 
-	uint256 public doctorCount;
-	mapping(address => Doctor) public DoctorInfo;
+	uint256 public doctorCount = 0;
+	mapping(address => Doctor) public DoctorInfo;	
 
-	enum Genders { Male, Female }
-
-	Genders gender;
-	Genders constant defaultGender = Genders.Male;
+	modifier onlyDoctor {
+        require (DoctorInfo[msg.sender].isActive == true, "Only doctors can add medical record");
+        _;
+    }
 
 	struct Doctor {
 		string firstName;
