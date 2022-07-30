@@ -1,4 +1,4 @@
-# Medic@Chain
+# MedicBlockChain
 
 ### An Etherium blockchain-based Medical Records Management System
 
